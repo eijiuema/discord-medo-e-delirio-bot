@@ -21,9 +21,9 @@
 ```
 
 ## Como usar
-- Preencha a variável ``TOKEN`` do seu bot no arquivo .env
-- Instale o Docker
-- Rode ``docker compose up``
+- Preencha a variável ``TOKEN`` do seu bot no arquivo ``.env``
+- Instale o [Docker](https://docs.docker.com/engine/install/)
+- Execute ``docker compose up``
 
 Áudios obtidos de: [rafaelclaycon/MedoDelirioBrasilia](https://github.com/rafaelclaycon/MedoDelirioBrasilia)
 
