@@ -1,12 +1,9 @@
 import os
 import discord
 import asyncio
-from dotenv import load_dotenv
 from discord.ext import commands
 from cogs.virgulas import Virgulas
 from cogs.musicas import Musicas
-
-load_dotenv()
 
 intents = discord.Intents.default()
 intents.message_content = True
@@ -20,8 +17,8 @@ async def on_ready():
     print(f"Logged in as {bot.user} (ID: {bot.user.id})")
     print("------")
 
-@bot.command(aliases=["s"])
-async def stop(ctx: commands.Context):
+@bot.command(aliases=["p"])
+async def parar(ctx: commands.Context):
     await ctx.voice_client.disconnect()
 
 async def main():
