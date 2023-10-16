@@ -10,9 +10,9 @@ with open("files/sound_data.json", "r", encoding="utf-8") as sound_data_file:
 
 def scorer(query, data):
     score = max(
-        fuzz.WRatio(query, data["title"]),
-        fuzz.WRatio(query, data["description"]),
-        fuzz.WRatio(query, data["filename"]),
+        fuzz.partial_ratio(query, data["title"]),
+        fuzz.partial_ratio(query, data["description"]),
+        fuzz.partial_ratio(query, data["filename"]),
     )
     return (score, data)
 
