@@ -4,5 +4,5 @@ WORKDIR /app
 COPY . /app
 RUN pip install -r requirements.txt
 RUN apt-get update -y
-RUN apt-get install libffi-dev libnacl-dev python3-dev -y
+RUN apt-get install libffi-dev libnacl-dev python3-dev ffmpeg -y
 CMD ["python", "-u", "./main.py"]
