@@ -72,7 +72,7 @@ class DropdownSound(discord.ui.Select):
 
         sound = get_sound_by_id(self.values[0])
         file = f'files/sounds/{sound["filename"]}'
-        source = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio(file))
+        source = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio(file), volume=0.6)
         voice.play(source)
         await interaction.response.send_message(f'Reproduzindo: {sound["title"]}', ephemeral=True)
 

@@ -73,7 +73,7 @@ class Dropdownsong(discord.ui.Select):
 
         song = get_song_by_id(self.values[0])
         file = f'files/songs/{song["filename"]}'
-        source = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio(file))
+        source = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio(file), volume=0.6)
         voice.play(source)
         await interaction.response.send_message(
             f'Reproduzindo: {song["title"]}', ephemeral=True
