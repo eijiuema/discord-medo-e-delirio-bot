@@ -1,9 +1,9 @@
 import json
 import discord
 from thefuzz import fuzz
-from discord.interactions import Interaction
 from discord.ext import commands
 import datetime
+from unidecode import unidecode
 
 with open("files/song_data.json", "r", encoding="utf-8") as song_data_file:
     songs = json.load(song_data_file)
@@ -11,9 +11,9 @@ with open("files/song_data.json", "r", encoding="utf-8") as song_data_file:
 
 def scorer(query, data):
     score = max(
-        fuzz.WRatio(query.lower(), data["title"].lower(), force_ascii=False),
-        fuzz.WRatio(query.lower(), data["description"].lower(), force_ascii=False),
-        fuzz.WRatio(query.lower(), data["filename"].lower(), force_ascii=False),
+        fuzz.WRatio(unidecode(query).lower(), unidecode(data["title"]).lower(), force_ascii=False),
+        fuzz.WRatio(unidecode(query).lower(), unidecode(data["description"]).lower(), force_ascii=False),
+        fuzz.WRatio(unidecode(query).lower(), unidecode(data["filename"]).lower(), force_ascii=False),
     )
     return (score, data)
 

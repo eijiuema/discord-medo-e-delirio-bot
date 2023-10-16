@@ -1,8 +1,8 @@
 import json
 import discord
 from thefuzz import fuzz
-from discord.interactions import Interaction
 from discord.ext import commands
+from unidecode import unidecode
 
 with open("files/sound_data.json", "r", encoding="utf-8") as sound_data_file:
     sounds = json.load(sound_data_file)
@@ -10,9 +10,9 @@ with open("files/sound_data.json", "r", encoding="utf-8") as sound_data_file:
 
 def scorer(query, data):
     score = max(
-        fuzz.WRatio(query.lower(), data["title"].lower(), force_ascii=False),
-        fuzz.WRatio(query.lower(), data["description"].lower(), force_ascii=False),
-        fuzz.WRatio(query.lower(), data["filename"].lower(), force_ascii=False),
+        fuzz.WRatio(unidecode(query).lower(), unidecode(data["title"]).lower(), force_ascii=False),
+        fuzz.WRatio(unidecode(query).lower(), unidecode(data["description"]).lower(), force_ascii=False),
+        fuzz.WRatio(unidecode(query).lower(), unidecode(data["filename"]).lower(), force_ascii=False),
     )
     return (score, data)
 
@@ -42,7 +42,7 @@ class Virgulas(commands.Cog):
                 ephemeral=True,
             )
             return
-        await ctx.reply(view=DropdownSoundView(sounds=sounds[:10]), ephemeral=True)
+        await ctx.reply(view=DropdownSoundView(sounds=sounds[:5]), ephemeral=True)
 
 
 class DropdownSound(discord.ui.Select):
@@ -50,8 +50,7 @@ class DropdownSound(discord.ui.Select):
         options = [
             discord.SelectOption(
                 label=sound["title"],
-                value=sound["id"],
-                description=sound["description"],
+                value=sound["id"]
             )
             for sound in sounds
         ]
