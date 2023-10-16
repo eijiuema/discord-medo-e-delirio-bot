@@ -10,9 +10,9 @@ with open("files/sound_data.json", "r", encoding="utf-8") as sound_data_file:
 
 def scorer(query, data):
     score = max(
-        fuzz.WRatio(query.lower(), data["title"].lower()),
-        fuzz.WRatio(query.lower(), data["description"].lower()),
-        fuzz.WRatio(query.lower(), data["filename"].lower()),
+        fuzz.WRatio(query.lower(), data["title"].lower(), force_ascii=False),
+        fuzz.WRatio(query.lower(), data["description"].lower(), force_ascii=False),
+        fuzz.WRatio(query.lower(), data["filename"].lower(), force_ascii=False),
     )
     return (score, data)
 
@@ -42,7 +42,7 @@ class Virgulas(commands.Cog):
                 ephemeral=True,
             )
             return
-        await ctx.reply(view=DropdownSoundView(sounds=sounds[:5]), ephemeral=True)
+        await ctx.reply(view=DropdownSoundView(sounds=sounds[:10]), ephemeral=True)
 
 
 class DropdownSound(discord.ui.Select):
