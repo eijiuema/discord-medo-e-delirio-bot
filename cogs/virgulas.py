@@ -4,25 +4,48 @@ from thefuzz import fuzz
 from discord.ext import commands
 from unidecode import unidecode
 
+with open("files/author_data.json", "r", encoding="utf-8") as author_data_file:
+    authors = {}
+    for author in json.load(author_data_file):
+        authors[author["id"]] = author
+
 with open("files/sound_data.json", "r", encoding="utf-8") as sound_data_file:
-    sounds = json.load(sound_data_file)
+    sounds = {}
+    for sound in json.load(sound_data_file):
+        sound["author"] = authors.get(
+            sound["authorId"], {"name": "?", "description": "?"}
+        )
+        sounds[sound["id"]] = sound
 
 
 def scorer(query, data):
     score = max(
-        fuzz.WRatio(unidecode(query).lower(), unidecode(data["title"]).lower(), force_ascii=False),
-        fuzz.WRatio(unidecode(query).lower(), unidecode(data["description"]).lower(), force_ascii=False),
-        fuzz.WRatio(unidecode(query).lower(), unidecode(data["filename"]).lower(), force_ascii=False),
+        fuzz.WRatio(
+            unidecode(query).lower(),
+            unidecode(data["title"]).lower(),
+            force_ascii=False,
+        ),
+        fuzz.WRatio(
+            unidecode(query).lower(),
+            unidecode(data["description"]).lower(),
+            force_ascii=False,
+        ),
+        fuzz.WRatio(
+            unidecode(query).lower(),
+            unidecode(data["filename"]).lower(),
+            force_ascii=False,
+        ),
+        fuzz.WRatio(
+            unidecode(query).lower(),
+            unidecode(data["author"]["name"]).lower(),
+            force_ascii=False,
+        ),
     )
     return (score, data)
 
 
-def get_sound_by_id(id: str):
-    return next(filter(lambda sound: sound["id"] == id, sounds))
-
-
 def get_sounds(query: str):
-    matches = [scorer(query, sound) for sound in sounds]
+    matches = [scorer(query, sound) for sound in sounds.values()]
     sorted_matches = sorted(matches, key=lambda match: match[0], reverse=True)
     sorted_sounds = [match[1] for match in sorted_matches]
     return sorted_sounds
@@ -50,7 +73,8 @@ class DropdownSound(discord.ui.Select):
         options = [
             discord.SelectOption(
                 label=sound["title"],
-                value=sound["id"]
+                value=sound["id"],
+                description=sound["author"]["name"],
             )
             for sound in sounds
         ]
@@ -66,14 +90,16 @@ class DropdownSound(discord.ui.Select):
             await interaction.user.voice.channel.connect()
         else:
             await interaction.guild.voice_client.move_to(interaction.user.voice.channel)
-            
+
         voice = interaction.guild.voice_client
 
-        sound = get_sound_by_id(self.values[0])
+        sound = sounds[self.values[0]]
         file = f'files/sounds/{sound["filename"]}'
         source = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio(file), volume=0.6)
         voice.play(source)
-        await interaction.response.send_message(f'Reproduzindo: {sound["title"]}', ephemeral=True)
+        await interaction.response.send_message(
+            f'Reproduzindo: {sound["title"]}', ephemeral=True
+        )
 
 
 class DropdownSoundView(discord.ui.View):
